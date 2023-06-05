@@ -10,17 +10,18 @@ import { FireauthService } from '../fireauthservice/fireauthservice.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.page.html',
-  styleUrls: ['./login.page.scss'],
+  selector: 'app-register',
+  templateUrl: './registerpage.page.html',
+  styleUrls: ['./registerpage.page.scss'],
 })
-export class LoginPage implements OnInit {
+export class RegisterPage implements OnInit {
   validationsForm: FormGroup;
   errorMessage = ''; // Remove the type annotation
+  successMessage = '';
   validationmessages = {
     email: [
       { type: 'required', message: 'Email is required.' },
-      { type: 'pattern', message: 'Please enter a valid email.' },
+      { type: 'pattern', message: 'Enter a valid email.' },
     ],
     password: [
       { type: 'required', message: 'Password is required.' },
@@ -50,18 +51,21 @@ export class LoginPage implements OnInit {
       ),
     });
   }
-  tryLogin(value) {
-    this.authService.doLogin(value).then(
+  tryRegister(value) {
+    this.authService.doRegister(value).then(
       (res) => {
-        this.router.navigate(['/home']);
+        console.log(res);
+        this.errorMessage = '';
+        this.successMessage = 'Your account has been created. Please login.';
       },
       (err) => {
-        this.errorMessage = err.message;
         console.log(err);
+        this.errorMessage = err.message;
+        this.successMessage = '';
       }
     );
   }
-  goRegisterPage() {
-    this.router.navigate(['/register']);
+  goLoginPage() {
+    this.router.navigate(['/login']);
   }
 }

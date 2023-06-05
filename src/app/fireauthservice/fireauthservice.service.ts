@@ -1,8 +1,11 @@
+// import * as firebase from 'firebase/app';
+
 import { Injectable } from '@angular/core';
 import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/database';
+// import { FireserviceService } from '../services/fireservice.service';
 import { FireserviceService } from '../fireservice/fireservice.service';
+// import { AngularFireAuth } from '@angular/fire/auth';
+// import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Injectable({
@@ -13,10 +16,10 @@ export class FireauthService {
     private firebaseService: FireserviceService,
     public afAuth: AngularFireAuth
   ) {}
-  doRegister(value: any) {
+  doRegister(value) {
     return new Promise<any>((resolve, reject) => {
-      firebase
-        .auth()
+      firebase.auth()
+      // this.afAuth
         .createUserWithEmailAndPassword(value.email, value.password)
         .then(
           (res) => resolve(res),
@@ -24,20 +27,20 @@ export class FireauthService {
         );
     });
   }
-  doLogin(value: any) {
+  doLogin(value) {
     return new Promise<any>((resolve, reject) => {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(value.email, value.password)
-        .then(
-          (res) => resolve(res),
-          (err) => reject(err)
-        );
+      firebase.auth()
+      // this.afAuth
+      .signInWithEmailAndPassword(value.email, value.password).then(
+        (res) => resolve(res),
+        (err) => reject(err)
+      );
     });
   }
-  doLogout(): Promise<void> {
+  doLogout() {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth
+      firebase.auth();
+      // this.afAuth
         .signOut()
         .then(() => {
           this.firebaseService.unsubscribeOnLogOut();

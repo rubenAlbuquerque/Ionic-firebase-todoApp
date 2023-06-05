@@ -1,18 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Task } from '../tasks';
 import { FireserviceService } from '../fireservice/fireservice.service';
-import { FireauthService } from '../fireauthservice/fireauthservice.service';
-import { Router } from '@angular/router';
+// import { Observable } from 'rxjs';
+// import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage {
-  tasks: Array<any> = [];
+export class HomePage implements OnInit {
+  // tasks: Array<any> = [];
+  tasks: any[];
+  fser: FireserviceService;
 
-  constructor(private fser: FireserviceService, private authService: FireauthService, private router: Router) {
+  constructor() {
     this.tasks = [
       { title: 'Milk', status: 'open' },
       { title: 'Eggs', status: 'open' },
@@ -21,52 +24,41 @@ export class HomePage {
   }
 
   addTask() {
-    let ntask = prompt("New Task");
-    if (ntask !== "") {
-      let t: Task = { $key: "", title: ntask, status: 'open' };
+    const ntask: string = prompt('New Task');
+    if (ntask !== '') {
+      const t: Task = { $key: '', title: ntask, status: 'open' };
       console.log(t);
-      this.fser.createTask(t).then(resp => {
-        console.log("createTask: then - " + resp);
-      })
-        .catch(error => {
-          console.log("createTask: catch - " + error);
+      this.fser
+        .createTask(t)
+        .then((resp) => {
+          console.log('createTask: then - ' + resp);
+        })
+        .catch((error) => {
+          console.log('createTask: catch - ' + error);
         });
-      console.log("addTask: " + this.tasks);
+      console.log('addTask: ' + this.tasks);
     }
   }
 
-  markAsDone(slidingItem: any, task: any) {
-    task.status = (task.status === "done") ? "open" : "done";
-    console.log("markAsDone " + task);
+  markAsDone(slidingItem, task: any) {
+    task.status = task.status === 'done' ? 'open' : 'done';
+    console.log('markAsDone ' + task);
     this.fser.updateTask(task.$key, task);
     slidingItem.close();
   }
-
-  removeTask(slidingItem: any, task: any) {
-    task.status = "removed";
+  removeTask(slidingItem, task: any) {
+    task.status = 'removed';
     this.fser.deleteTask(task.$key);
     slidingItem.close();
   }
 
-  logout(){
-    this.authService.doLogout()
-    .then(res => {
-    this.router.navigate(["/login"]);
-    }, err => {
-    console.log(err);
-    })
-    } 
-
-  ngOnInit() {
-    this.fser.getTasks().subscribe((data: any) => {
-      this.tasks = data.map((e: any) => {
-        const docData = e.payload.doc.data();
-        return {
-          $key: e.payload.doc.id,
-          title: docData.title as string,
-          status: docData.status as string,
-        };
-      });
+  ngOnInit(): void {
+    this.fser.getTasks().subscribe((data) => {
+      this.tasks = data.map((e) => ({
+        $key: e.payload.doc.id,
+        title: e.payload.doc.data().title,
+        status: e.payload.doc.data().status,
+      }));
       console.log(this.tasks);
     });
   }

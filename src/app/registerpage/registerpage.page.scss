@@ -1,7 +1,10 @@
 .error-message {
   color: var(--ion-color-danger);
  }
- .go-to-register {
+ .success-message {
+  color: var(--ion-color-success);
+ }
+ .go-to-login {
   text-align: center;
   margin-top: 20px;
  }
